@@ -27,13 +27,17 @@ module StoreTestHelpers
                   status: "paid", placed_at: placed_at)
   end
 
-  # Number of SQL statements run by the block (schema lookups, transactions and cache hits excluded).
+  # Number of SQL statements run by the block (schema lookups and transactions excluded).
+  # Rails keeps the query cache on for a whole test, which would hide repeated queries across
+  # requests, so the block runs uncached.
   def count_queries
     count = 0
     counter = lambda do |*, payload|
-      count += 1 unless payload[:cached] || %w[SCHEMA TRANSACTION].include?(payload[:name])
+      count += 1 unless %w[SCHEMA TRANSACTION].include?(payload[:name])
     end
-    ActiveSupport::Notifications.subscribed(counter, "sql.active_record") { yield }
+    ActiveRecord::Base.uncached do
+      ActiveSupport::Notifications.subscribed(counter, "sql.active_record") { yield }
+    end
     count
   end
 end
