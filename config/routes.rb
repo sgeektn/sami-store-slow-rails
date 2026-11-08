@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   root "products#index"
   resources :products, only: :index
   resources :orders, only: :index
+  post "checkout", to: "checkout#create"
 
   namespace :api do
     resources :products, only: :index
