@@ -28,3 +28,8 @@ group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
 end
+
+# Observability: send traces to SigNoz (or any OTLP backend) over OpenTelemetry.
+gem "opentelemetry-sdk", "~> 1.6"
+gem "opentelemetry-exporter-otlp", "~> 0.29"
+gem "opentelemetry-instrumentation-all", "~> 0.74"
