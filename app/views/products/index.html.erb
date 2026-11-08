@@ -1,0 +1,27 @@
+<h1>Sami Store</h1>
+<p><%= @products.size %> products</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Category</th>
+      <th>Price</th>
+      <th>Rating</th>
+      <th>Reviews</th>
+      <th>In stock</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @products.each do |product| %>
+      <tr>
+        <td><%= product.name %></td>
+        <td><%= product.category.name %></td>
+        <td><%= number_to_currency(product.price_cents / 100.0) %></td>
+        <td><%= product.average_rating || "-" %></td>
+        <td><%= product.review_count %></td>
+        <td><%= product.stock %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
