@@ -1,16 +1,31 @@
 module Api
   class ProductsController < ApplicationController
-    LIMIT = 1000
+    DEFAULT_PER_PAGE = 50
+    MAX_PER_PAGE = 100
 
-    # BUG 3 (heavy serialization): the associations are eager loaded (no N+1 here), but the
-    # response carries every column of every product, its full description, its category
-    # and all of its reviews, with no way to page through the catalog. The database is
-    # fast; Ruby spends its time building and encoding a multi-megabyte JSON document.
-    # Fix lives on the fix/03-serialization branch.
+    # Fix for bug 3: page through the catalog and send only what a list needs.
+    #   GET /api/products?page=2&per_page=50
     def index
-      products = Product.includes(:category, :reviews).order(:id).limit(LIMIT)
+      page = [params.fetch(:page, 1).to_i, 1].max
+      per_page = params.fetch(:per_page, DEFAULT_PER_PAGE).to_i.clamp(1, MAX_PER_PAGE)
 
-      render json: products.as_json(include: %i[category reviews])
+      products = Product.includes(:category)
+                        .select(:id, :name, :sku, :price_cents, :category_id)
+                        .order(:id)
+                        .limit(per_page)
+                        .offset((page - 1) * per_page)
+
+      render json: {
+        products: products.map { |p| serialize(p) },
+        meta: { page: page, per_page: per_page, total: Product.count }
+      }
+    end
+
+    private
+
+    def serialize(product)
+      { id: product.id, name: product.name, sku: product.sku,
+        price_cents: product.price_cents, category: product.category.name }
     end
   end
 end
