@@ -30,6 +30,8 @@ Rails.application.configure do
 
   # Don't care if the mailer can't send.
   config.action_mailer.raise_delivery_errors = false
+  # No real SMTP server in this demo: mails are kept in memory (ActionMailer::Base.deliveries).
+  config.action_mailer.delivery_method = :test
 
   # Make template changes take effect immediately.
   config.action_mailer.perform_caching = false
