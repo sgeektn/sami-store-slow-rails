@@ -1,4 +1,4 @@
-# Seeds a store big enough for the performance problems to be visible.
+# Seeds a store (1M orders by default) big enough for the performance problems to be visible.
 # Uses set-based SQL so it finishes in seconds, not minutes.
 #
 #   bin/rails db:seed
@@ -13,8 +13,8 @@ categories  = Integer(ENV.fetch("SEED_CATEGORIES", 20))
 products    = Integer(ENV.fetch("SEED_PRODUCTS", 50_000))
 customers   = Integer(ENV.fetch("SEED_CUSTOMERS", 20_000))
 reviews_per = Integer(ENV.fetch("SEED_REVIEWS_PER_PRODUCT", 5))
-orders      = Integer(ENV.fetch("SEED_ORDERS", 300_000))
-items_per   = Integer(ENV.fetch("SEED_ITEMS_PER_ORDER", 2))
+orders      = Integer(ENV.fetch("SEED_ORDERS", 1_000_000))
+items_per   = Integer(ENV.fetch("SEED_ITEMS_PER_ORDER", 1))
 
 conn = ActiveRecord::Base.connection
 started = Process.clock_gettime(Process::CLOCK_MONOTONIC)
