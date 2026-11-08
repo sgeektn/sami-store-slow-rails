@@ -8,7 +8,7 @@ A small e-commerce app (products, categories, reviews, orders, customers) with *
 |---|----------|-----|----------------------|------------|
 | 1 | `GET /products` | N+1 queries | About 400 near-identical DB spans under one request | `fix/01-n-plus-one` |
 | 2 | `GET /orders?email=` | Missing index | One DB span that scans the whole `orders` table | `fix/02-missing-index` |
-| 3 | `GET /api/products` | Heavy serialization | DB time is tiny, Ruby time builds a 2.4 MB JSON | `fix/03-serialization` |
+| 3 | `GET /api/products` | Heavy serialization | DB time is tiny, Ruby time builds a 2.3 MB JSON | `fix/03-serialization` |
 | 4 | `POST /checkout` | Slow work inside the request | Payment and SMTP spans block the response | `fix/04-background-job` |
 
 Each fix branch starts from `main`, so its diff contains only that fix and the test that proves it.
@@ -28,7 +28,7 @@ bundle install
 bin/rails db:create db:migrate db:seed
 ```
 
-The seed (about 30 seconds) creates 50k products, 250k reviews and 1M orders. Use `SEED_PRODUCTS`, `SEED_ORDERS` and friends for a smaller dataset. The database settings come from `DB_HOST`, `DB_PORT`, `DB_USER` and `DB_PASSWORD`.
+The seed (about 30 seconds) creates a hardware catalog of 50k products, 250k reviews and 1M orders. Use `SEED_PRODUCTS`, `SEED_ORDERS` and friends for a smaller dataset. The database settings come from `DB_HOST`, `DB_PORT`, `DB_USER` and `DB_PASSWORD`.
 
 ## Send traces to SigNoz
 
