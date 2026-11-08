@@ -1,9 +1,11 @@
 class CheckoutController < ApplicationController
   skip_forgery_protection # JSON API used by the benchmarks
 
-  # BUG 4 (slow work inside the request): the response is held back by the payment
-  # provider call and the confirmation email, about a second of pure waiting that the
-  # customer sits through. Fix lives on the fix/04-background-job branch.
+  # Fix for bug 4: record the order as pending, answer right away (202 Accepted) and let
+  # OrderProcessingJob charge the card and send the email in the background.
+  #
+  # Demo simplification: a real shop would usually authorize the payment before accepting
+  # the order, and only move the capture and the email to a job.
   def create
     customer = Customer.find_by!(email: params.require(:email))
     product = Product.find(params.require(:product_id))
@@ -16,10 +18,8 @@ class CheckoutController < ApplicationController
       end
     end
 
-    PaymentProvider.charge!(order)
-    order.update!(status: "paid")
-    OrderMailer.confirmation(order).deliver_now
+    OrderProcessingJob.perform_later(order.id)
 
-    render json: { id: order.id, status: order.status }, status: :created
+    render json: { id: order.id, status: order.status }, status: :accepted
   end
 end
