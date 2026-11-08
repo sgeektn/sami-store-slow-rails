@@ -10,8 +10,11 @@ class Product < ApplicationRecord
     reviews.size
   end
 
+  # Works on the loaded reviews. `reviews.average(:rating)` would run a new query every time.
   def average_rating
-    reviews.average(:rating)&.round(1)
+    return if reviews.empty?
+
+    (reviews.sum(&:rating).to_f / reviews.size).round(1)
   end
 
   def stock

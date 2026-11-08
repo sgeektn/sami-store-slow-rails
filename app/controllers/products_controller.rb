@@ -1,10 +1,9 @@
 class ProductsController < ApplicationController
   PER_PAGE = 100
 
-  # BUG 1 (N+1 queries): the view asks every product for its category, review stats and
-  # stock level, and each of those is a separate query. 100 products = ~400 queries.
-  # Fix lives on the fix/01-n-plus-one branch.
+  # Fix for bug 1: load the category, inventory and reviews for the whole page up front
+  # (one extra query per association) instead of once per product.
   def index
-    @products = Product.order(:id).limit(PER_PAGE)
+    @products = Product.includes(:category, :inventory, :reviews).order(:id).limit(PER_PAGE)
   end
 end
