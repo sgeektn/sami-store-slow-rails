@@ -1,27 +1,58 @@
-<h1>Sami Store</h1>
-<p><%= @products.size %> products</p>
+<header class="masthead">
+  <h1 class="wordmark">Sami Store</h1>
+  <p class="trade">Hardware and workshop supply</p>
+</header>
+<hr class="keyline">
 
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Category</th>
-      <th>Price</th>
-      <th>Rating</th>
-      <th>Reviews</th>
-      <th>In stock</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @products.each do |product| %>
+<h2 class="page-title">Catalog</h2>
+<p class="page-note">The first <%= ProductsController::PER_PAGE %> products in the catalog.</p>
+
+<div class="scroller">
+  <table>
+    <caption>Products with their category, price, customer rating and stock level</caption>
+    <colgroup>
+      <col class="c-item"><col class="c-category"><col class="c-price">
+      <col class="c-rating"><col class="c-reviews"><col class="c-stock">
+    </colgroup>
+    <thead>
       <tr>
-        <td><%= product.name %></td>
-        <td><%= product.category.name %></td>
-        <td><%= number_to_currency(product.price_cents / 100.0) %></td>
-        <td><%= product.average_rating || "-" %></td>
-        <td><%= product.review_count %></td>
-        <td><%= product.stock %></td>
+        <th scope="col">Product</th>
+        <th scope="col">Category</th>
+        <th scope="col" class="num">Price</th>
+        <th scope="col" class="num">Rating</th>
+        <th scope="col" class="num">Reviews</th>
+        <th scope="col" class="num">Stock</th>
       </tr>
-    <% end %>
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+      <% @products.each do |product| %>
+        <% rating = product.average_rating %>
+        <% stock = product.stock %>
+        <tr>
+          <td>
+            <span class="item-name"><%= product.name %></span>
+            <span class="sku"><%= product.sku %></span>
+          </td>
+          <td class="category"><%= product.category.name %></td>
+          <td class="num price"><%= number_to_currency(product.price_cents / 100.0) %></td>
+          <td>
+            <div class="rating">
+              <span class="meter" aria-hidden="true">
+                <% 5.times { |i| %><i class="<%= "on" if rating && i < rating.round %>"></i><% } %>
+              </span>
+              <span class="score"><%= number_with_precision(rating, precision: 1) if rating %></span>
+            </div>
+          </td>
+          <td class="reviews"><%= product.review_count %></td>
+          <td class="stock <%= stock.zero? ? "out" : ("low" if stock < 25) %>">
+            <% if stock.zero? %>
+              None
+            <% else %>
+              <%= stock %><% if stock < 25 %> <span class="qualifier">left</span><% end %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

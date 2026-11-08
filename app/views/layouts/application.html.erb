@@ -1,21 +1,108 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <title><%= content_for(:title) || "Sami Store" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="Sami Store">
-    <meta name="mobile-web-app-capable" content="yes">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
     <%= yield :head %>
+    <style>
+      /* Styles are inline on purpose: the app has no asset pipeline, and keeping the page to
+         a single request leaves the SigNoz traces uncluttered. */
+      :root {
+        color-scheme: light;
+        --ground: #e9ece9;
+        --surface: #ffffff;
+        --ink: #16211d;
+        --ink-soft: #5e6d66;
+        --ink-faint: #8d9a93;
+        --rule: #d6ddd8;
+        --accent: #0e5340;
+        --rust: #a8431c;
+      }
 
+      *, *::before, *::after { box-sizing: border-box; }
 
+      body {
+        margin: 0;
+        padding: 40px 24px 72px;
+        background: var(--ground);
+        color: var(--ink);
+        font-family: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+        font-size: 15px;
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+      }
 
+      .sheet { max-width: 1060px; margin: 0 auto; }
+
+      .masthead { display: flex; align-items: baseline; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+      .wordmark { margin: 0; font-size: 27px; font-weight: 600; letter-spacing: -0.02em; }
+      .trade { margin: 0; color: var(--ink-soft); font-size: 13px; }
+      .masthead + .keyline { margin: 14px 0 32px; border: 0; border-top: 3px solid var(--accent); }
+
+      .page-title { margin: 0; font-size: 19px; font-weight: 600; letter-spacing: -0.01em; }
+      .page-note { margin: 2px 0 20px; color: var(--ink-soft); font-size: 13px; }
+
+      .scroller { overflow-x: auto; background: var(--surface); border: 1px solid var(--rule); border-radius: 3px; }
+
+      table { width: 100%; min-width: 760px; border-collapse: collapse; table-layout: fixed; font-variant-numeric: tabular-nums; }
+      col.c-item { width: 34%; }
+      col.c-category { width: 15%; }
+      col.c-price { width: 11%; }
+      col.c-rating { width: 15%; }
+      col.c-reviews { width: 11%; }
+      col.c-stock { width: 14%; }
+      caption { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+
+      th {
+        padding: 13px 18px;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--ink-soft);
+        text-align: left;
+        white-space: nowrap;
+        border-bottom: 1.5px solid var(--ink);
+      }
+      td { padding: 10px 18px; border-bottom: 1px solid var(--rule); vertical-align: middle; }
+      tbody tr:last-child td { border-bottom: 0; }
+
+      .num { text-align: right; }
+      .item-name { font-weight: 500; }
+      .sku {
+        display: block;
+        margin-top: 1px;
+        font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 11.5px;
+        color: var(--ink-faint);
+        letter-spacing: 0.01em;
+      }
+      .category { color: var(--ink-soft); white-space: nowrap; }
+      .price { font-weight: 500; white-space: nowrap; }
+      .reviews { color: var(--ink-soft); text-align: right; }
+
+      .rating { display: flex; align-items: center; justify-content: flex-end; gap: 9px; }
+      .meter { display: flex; gap: 2px; }
+      .meter i { width: 4px; height: 13px; background: var(--rule); border-radius: 1px; }
+      .meter i.on { background: var(--accent); }
+      .score { min-width: 22px; text-align: right; }
+
+      .stock { text-align: right; white-space: nowrap; }
+      .stock.low { color: var(--rust); font-weight: 500; }
+      .stock.out { color: var(--ink-faint); }
+      .stock .qualifier { font-size: 12px; font-weight: 400; }
+
+      @media (max-width: 620px) {
+        body { padding: 28px 16px 56px; }
+        .wordmark { font-size: 23px; }
+        th, td { padding-left: 14px; padding-right: 14px; }
+      }
+    </style>
   </head>
-
   <body>
-    <%= yield %>
+    <div class="sheet"><%= yield %></div>
   </body>
 </html>
